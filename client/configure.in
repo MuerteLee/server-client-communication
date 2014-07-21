@@ -1,0 +1,75 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_PREREQ(1.0.0)
+AC_INIT(samples)
+AM_INIT_AUTOMAKE(samples,0.0.1)
+
+dnl ========================================================================
+dnl needed for cross-compiling
+AC_CONFIG_SRCDIR([src/meminfo.c])
+dnl AC_CONFIG_HEADERS([config.h])
+
+dnl ========================================================================
+dnl Checks for programs.
+AC_PROG_MAKE_SET
+AC_PROG_CC
+
+# Checks for library functions.
+AC_FUNC_MALLOC
+AC_CHECK_FUNCS([strcspn strspn])
+
+
+dnl ========================================================================
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_C_INLINE
+
+dnl ========================================================================
+dnl Checks for header files.
+AC_HEADER_STDC
+AC_HEADER_SYS_WAIT
+AC_HEADER_TIME
+AC_CONFIG_HEADERS(mgconfig.h)
+AC_CHECK_HEADERS(sys/time.h unistd.h)
+AC_CHECK_HEADERS([stdlib.h string.h])
+
+
+dnl ========================================================================
+dnl check for non-UNIX system
+unix="yes"
+AC_CHECK_DECLS(__NOUNIX__, unix="no", foo=bar)
+
+
+AC_ARG_WITH(lang,
+        [  --with-lang=[en/zhcn/zhtw]])
+
+case "$with_lang" in
+  zhcn)
+    AC_DEFINE(_LANG_ZHCN, 1, 
+            [Use text strings for locale zh_CN in GB2312])
+    ;;
+  zhtw)
+    AC_DEFINE(_LANG_ZHTW, 1, 
+            [Use text strings for locale zh_TW in BIG5])
+    ;;
+  *)
+    AC_DEFINE(_LANG_EN, 1, 
+            [Use text strings for locale en_US in ISO8859-1])
+    ;;
+esac
+
+dnl ========================================================================
+dnl Write Output
+
+if test "$ac_cv_prog_gcc" = "yes"; then
+    CFLAGS="$CFLAGS -Wall -Wstrict-prototypes -pipe"
+fi
+
+
+LIBS="$LIBS -lpthread"
+
+
+AC_OUTPUT(
+Makefile
+src/Makefile
+)
+
